@@ -85,7 +85,7 @@ if [[ {ellekit,oldabi} =~ "$DEB_PACKAGE" ]] || [ "$DEB_MAINTAINER" == "Procursus
     $ECHO "*** Not a tweak package!\ncontact @RootHideDev to update it.\n\nskipping and exiting cleanly."
     rm -rf "$TEMPDIR_OLD" "$TEMPDIR_NEW"
     exit 1;
-elif [[ {"xyz.cypwn.xinam1ne","app.legizmo.moonstone","lunotech11.legizmo.lighthouse","lunotech11.legizmo.kincaid","lunotech11.legizmo.jupiter","lunotech11.legizmo.grace"} =~ "$DEB_PACKAGE" ]]; then
+elif [[ {"xyz.cypwn.xinam1ne","app.legizmo.moonstone","lunotech11.legizmo.lighthouse","lunotech11.legizmo.kincaid","lunotech11.legizmo.jupiter","lunotech11.legizmo.grace","kr.xsf1re.vnodebypass","byg.iosios.net..vnodebypass.rootless","com.juanillo62gm.darkboardxs","net.limneos.voicechangerx-rootless"} =~ "$DEB_PACKAGE" ]]; then
     $ECHO "*** This package is not compatible, please contact its developer to update it.\n\nskipping and exiting cleanly."
     rm -rf "$TEMPDIR_OLD" "$TEMPDIR_NEW"
     exit 1;
@@ -156,6 +156,10 @@ Derootifier() {
 if [ $DEB_ARCH == "iphoneos-arm" ] && [ -z "$3" ]; then
     Derootifier $@
     exit 0
+elif [ $DEB_ARCH == "iphoneos-arm" ]; then
+    $ECHO "$DEB_ARCH\n*** It's a rootful package, you can try the first option [Directly Convert Simple Tweaks]\n\nskipping and exiting cleanly."
+    rm -rf "$TEMPDIR_OLD" "$TEMPDIR_NEW"
+    exit 1;
 elif [ $DEB_ARCH != "iphoneos-arm64" ]; then
     $ECHO "$DEB_ARCH\n*** Not a rootless package!\n\nskipping and exiting cleanly."
     rm -rf "$TEMPDIR_OLD" "$TEMPDIR_NEW"
@@ -256,6 +260,8 @@ find "$TEMPDIR_NEW" -type f -size +0c \! -path "*/var/mobile/Library/pkgmirror/*
         $SED -i 's| /lib/| /rootfs/lib/|g' "$file"
         $SED -i 's| /usr/| /rootfs/usr/|g' "$file"
         $SED -i 's| /var/| /rootfs/var/|g' "$file"
+                
+        $SED -i 's|DIR="/Library/|DIR="/rootfs/Library/|g' "$file"
         
         $SED -i '1s|^#!\s*\/rootfs\/|#! \/|' "$file"  #revert shebang
                                                 

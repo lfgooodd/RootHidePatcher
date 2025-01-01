@@ -25,6 +25,7 @@
 		842F70832ACEC1BF002E5574 /* AuxiliaryExecute+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F70822ACEC1BF002E5574 /* AuxiliaryExecute+Async.swift */; };
 		842F70852ACEC1C3002E5574 /* AuxiliaryExecute+Shell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F70842ACEC1C3002E5574 /* AuxiliaryExecute+Shell.swift */; };
 		842F70872ACEC1C7002E5574 /* AuxiliaryExecute+Spawn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F70862ACEC1C7002E5574 /* AuxiliaryExecute+Spawn.swift */; };
+		8450CC402D06B4D200BFCA94 /* cctools in Resources */ = {isa = PBXBuildFile; fileRef = 8450CC3F2D06B4D200BFCA94 /* cctools */; };
 		845FA8552BE9B603009C564D /* AppFileShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 845FA8532BE9B603009C564D /* AppFileShare.m */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,7 @@
 		842F70822ACEC1BF002E5574 /* AuxiliaryExecute+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AuxiliaryExecute+Async.swift"; path = "AuxiliaryExecute/Sources/AuxiliaryExecute/AuxiliaryExecute+Async.swift"; sourceTree = "<group>"; };
 		842F70842ACEC1C3002E5574 /* AuxiliaryExecute+Shell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AuxiliaryExecute+Shell.swift"; path = "AuxiliaryExecute/Sources/AuxiliaryExecute/AuxiliaryExecute+Shell.swift"; sourceTree = "<group>"; };
 		842F70862ACEC1C7002E5574 /* AuxiliaryExecute+Spawn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AuxiliaryExecute+Spawn.swift"; path = "AuxiliaryExecute/Sources/AuxiliaryExecute/AuxiliaryExecute+Spawn.swift"; sourceTree = "<group>"; };
+		8450CC3F2D06B4D200BFCA94 /* cctools */ = {isa = PBXFileReference; lastKnownFileType = folder; path = cctools; sourceTree = "<group>"; };
 		845FA8532BE9B603009C564D /* AppFileShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppFileShare.m; sourceTree = "<group>"; };
 		845FA8542BE9B603009C564D /* AppFileShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppFileShare.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -78,6 +80,7 @@
 		6DCF8E2729EA9E6F00D55A37 = {
 			isa = PBXGroup;
 			children = (
+				8450CC3F2D06B4D200BFCA94 /* cctools */,
 				841E40EE2B14E80300A8B198 /* roothide */,
 				840A948E2C6CA03E00180FFA /* roothide.h */,
 				842F70702ACD265C002E5574 /* Derootifier-Swift-Bridging.h */,
@@ -249,6 +252,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8450CC402D06B4D200BFCA94 /* cctools in Resources */,
 				842F70782ACE4385002E5574 /* roothide.entitlements in Resources */,
 				842F706B2ACC3847002E5574 /* patch.sh in Resources */,
 				6DCF8E3B29EA9E7100D55A37 /* Preview Assets.xcassets in Resources */,

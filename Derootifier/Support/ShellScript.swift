@@ -11,7 +11,7 @@ import UIKit
 func repackDeb(scriptPath: String, debURL: URL, outputURL: URL, patch: String) -> (Bool,String) {
     var output = ""
     let command = jbroot("/usr/bin/bash")
-    let env = ["PATH": "/usr/bin:$PATH"]
+    let env = ["PATH": "/usr/bin:$PATH:\(Bundle.main.bundlePath)/cctools"]
     let args = ["-p", rootfs(scriptPath), debURL.path, outputURL.path, patch]
 
 //    assert(setuid(0) == 0)
@@ -38,7 +38,7 @@ func checkFileMngrs(path: String) {
     NSLog("RootHidePatcher: \(path)")
     let activity = UIActivityViewController(activityItems: [URL(fileURLWithPath: jbroot(path))], applicationActivities: nil)
     
-    let window = UIApplication.shared.windows[0] //same as Alert++
+    let window = UIApplication.shared.keyWindow!
 
     // don't touch this for ipad
     activity.popoverPresentationController?.sourceView = window

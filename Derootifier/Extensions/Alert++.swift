@@ -42,7 +42,7 @@ extension UIApplication {
     }
     
     func present(alert: UIViewController, animated: Bool = true) {
-        if var topController = self.windows[0].rootViewController {
+        if var topController = self.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
             }

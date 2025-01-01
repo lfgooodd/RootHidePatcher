@@ -93,14 +93,15 @@ struct ContentView: View {
                     }
                     .buttonStyle(TintedButton(color: .white, fullwidth: true))
                     .padding(30)
+                    .disabled(!simpleTweak && !usingRootlessCompat && !requireDynamicPatches)
                 }
                 
                 
-                if let _ = selectedFile {
+                if (selectedFile != nil) {
                     Toggle("Directly Convert Simple Tweaks", isOn: $simpleTweak)
                         .toggleStyle(SwitchToggleStyle(tint: Color.blue))
-                        .foregroundColor(.white.opacity(0.4))
-                        .frame(width: 350)
+                        .foregroundColor(.white.opacity(0.6))
+                        .frame(width: 300)
                         .padding(5)
                         .disabled(false).onChange(of: simpleTweak) { value in
                             if value {
@@ -108,10 +109,10 @@ struct ContentView: View {
                                 requireDynamicPatches = false
                             }
                         }
-                    Toggle("Using Rootless Compat Layer", isOn: $usingRootlessCompat)
+                    Toggle("Rootless Compat Layer", isOn: $usingRootlessCompat)
                         .toggleStyle(SwitchToggleStyle(tint: Color.blue))
                         .foregroundColor(.white.opacity(0.9))
-                        .frame(width: 350)
+                        .frame(width: 300)
                         .padding(5)
                         .disabled(false).onChange(of: usingRootlessCompat) { value in
                             if value {
@@ -122,7 +123,7 @@ struct ContentView: View {
                     Toggle("Require Dynamic Patches", isOn: $requireDynamicPatches)
                         .toggleStyle(SwitchToggleStyle(tint: Color.blue))
                         .foregroundColor(.white.opacity(0.3))
-                        .frame(width: 350)
+                        .frame(width: 300)
                         .padding(5)
                         .disabled(false).onChange(of: requireDynamicPatches) { value in
                             if value {

@@ -1,12 +1,12 @@
 Package: com.roothide.patcher
 Name: RootHide Patcher
-Version: 1.8
+Version: 1.9
 Architecture: iphoneos-arm64e
-Depends: firmware (>= 15.0), odcctools, ldid, file, dpkg, gawk, plutil(>= 0.2.2-1), rsync
+Depends: firmware (>= 15.0), libxar1, ldid, file, dpkg, gawk, plutil(>= 0.2.2-1), rsync
 Description: patch rootless package to roothide, not work for all packages.
-Maintainer: RootHide
-Author: RootHide
+Maintainer: roothide
+Author: roothide
 Section: Utilities
-Icon: https://github.com/RootHide/RootHidePatcher/blob/master/derootifier-2-modified.png?raw=true
-Depiction: https://github.com/RootHide/RootHidePatcher
-Support: https://github.com/RootHide/RootHidePatcher
+Icon: https://github.com/roothide/RootHidePatcher/blob/master/derootifier-2-modified.png?raw=true
+Depiction: https://github.com/roothide/RootHidePatcher
+Support: https://github.com/roothide/RootHidePatcher
