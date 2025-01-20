@@ -60,12 +60,12 @@ struct ContentView: View {
                             
                             var patch=""
                             if usingRootlessCompat { patch="AutoPatches" } else if requireDynamicPatches { patch="DynamicPatches" }
-                            let (success,outputAux) = repackDeb(scriptPath: scriptPath, debURL: debfile, outputURL: output, patch: patch)
+                            let (exitCode,outputAux) = repackDeb(scriptPath: scriptPath, debURL: debfile, outputURL: output, patch: patch)
                             
                             DispatchQueue.main.async {
                                 UIApplication.shared.dismissAlert(animated: false) {
-                                    if !success {
-                                        UIApplication.shared.alert(title: "Error", body: outputAux)
+                                    if exitCode != 0 {
+                                        UIApplication.shared.alert(title: "Error(\(exitCode))", body: outputAux)
                                         return
                                     }
                                     resetPatches()

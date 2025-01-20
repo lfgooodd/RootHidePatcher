@@ -80,27 +80,50 @@ DEB_VERSION=$(grep '^Version:' "$TEMPDIR_OLD"/DEBIAN/control | cut -f2 -d ' ' | 
 DEB_ARCH=$(grep '^Architecture:' "$TEMPDIR_OLD"/DEBIAN/control | cut -f2 -d ' ' | tr -d '\n\r')
 DEB_MAINTAINER=$(grep '^Maintainer:' "$TEMPDIR_OLD"/DEBIAN/control | $SED -E 's/^Maintainer:\s*//' | tr -d '\n\r')
 
+INCOMPATIBLE_PACKAGES=("xinam1ne" "xinamine" "legizmo" "vnodebypass" "voicechangerx-rootless" "appsyncunified")
+
 # not tweaks
 if [[ {ellekit,oldabi} =~ "$DEB_PACKAGE" ]] || [ "$DEB_MAINTAINER" == "Procursus Team <support@procurs.us>" ]; then
     $ECHO "*** Not a tweak package!\ncontact @RootHideDev to update it.\n\nskipping and exiting cleanly."
     rm -rf "$TEMPDIR_OLD" "$TEMPDIR_NEW"
     exit 1;
-elif [[ {"xyz.cypwn.xinam1ne","app.legizmo.moonstone","lunotech11.legizmo.lighthouse","lunotech11.legizmo.kincaid","lunotech11.legizmo.jupiter","lunotech11.legizmo.grace","kr.xsf1re.vnodebypass","byg.iosios.net..vnodebypass.rootless","com.juanillo62gm.darkboardxs","net.limneos.voicechangerx-rootless"} =~ "$DEB_PACKAGE" ]]; then
-    $ECHO "*** This package is not compatible, please contact its developer to update it.\n\nskipping and exiting cleanly."
-    rm -rf "$TEMPDIR_OLD" "$TEMPDIR_NEW"
-    exit 1;
+else
+    for substring in "${INCOMPATIBLE_PACKAGES[@]}"; do
+      case "$DEB_PACKAGE" in
+        *"$substring"*)
+            $ECHO "*** This package is not compatible, please contact its developer to update it.\n\nskipping and exiting cleanly."
+            rm -rf "$TEMPDIR_OLD" "$TEMPDIR_NEW"
+            exit 1;
+          ;;
+      esac
+    done
 fi
 
 OUTPUT_PATH="$TMPDIR/$DEB_PACKAGE"_"$DEB_VERSION"_"iphoneos-arm64e".deb
 if [ ! -z "$2" ]; then OUTPUT_PATH=$2; fi;
 
+I_N_T() {
+    if ! install_name_tool "$@" ; then
+        ldid -s "${!#}"
+        install_name_tool "$@"
+        return $?
+    fi
+    return 0
+}
+
+exclude_files=("*.lproj/*" "*.png" "*.gif" "*.jpg" "*.jpeg" "*.svg" "*.strings" "*.lua" "*.js" "*.py" "*.h" "*.json" "*.txt" "*.xml")
 
 ### Derootifier Script ##################################
 Derootifier() {
 
     mv -f "$TEMPDIR_OLD"/* "$TEMPDIR_NEW"/
     
-    find "$TEMPDIR_NEW" -type f -size +0c \! -path "*/var/mobile/Library/pkgmirror/*" \! -path "*.lproj/*" \! -path "*.png" \! -path "*.svg" \! -path "*.strings" \! -path "*.lua" | while read -r file; do
+    findcmd=(find "$TEMPDIR_NEW" -type f -size +0c \! -path "*/var/mobile/Library/pkgmirror/*")
+    for item in "${exclude_files[@]}"; do
+        findcmd+=( \! -path "$item" )
+    done
+
+    "${findcmd[@]}" | while read -r file; do
       fname=$(basename "$file")
       fpath=/$(realpath --relative-base="$TEMPDIR_NEW" "$file")
       ftype=$(file -b "$file")
@@ -111,16 +134,16 @@ Derootifier() {
         if [ -f "$TEMPDIR_OLD"/._lib_cache ]; then
             cat "$TEMPDIR_OLD"/._lib_cache | while read line; do
                 if echo "$line" | grep -q ^/usr/lib/ ; then
-                    install_name_tool -change "$line" @rpath/"${line#/usr/lib/}" "$file"
+                    I_N_T -change "$line" @rpath/"${line#/usr/lib/}" "$file"
                 elif echo "$line" | grep -q ^/Library/Frameworks/ ; then
-                    install_name_tool -change "$line" @rpath/"${line#/Library/Frameworks/}" "$file"
+                    I_N_T -change "$line" @rpath/"${line#/Library/Frameworks/}" "$file"
                 fi
             done
         fi
-        install_name_tool -add_rpath "/usr/lib" "$file"
-        install_name_tool -add_rpath "@loader_path/.jbroot/usr/lib" "$file"
-        install_name_tool -add_rpath "/Library/Frameworks" "$file" >/dev/null
-        install_name_tool -add_rpath "@loader_path/.jbroot/Library/Frameworks" "$file"
+        I_N_T -add_rpath "/usr/lib" "$file"
+        I_N_T -add_rpath "@loader_path/.jbroot/usr/lib" "$file"
+        I_N_T -add_rpath "/Library/Frameworks" "$file" >/dev/null
+        I_N_T -add_rpath "@loader_path/.jbroot/Library/Frameworks" "$file"
 
         $ECHO -n "resign..."
         if echo $ftype | grep -q "executable"; then
@@ -192,9 +215,11 @@ if [ ! -z "$rootfsfiles" ]; then
 fi
 # some packages have both /var/jb/var/xxx and /var/xxx, same file same name
 if [ ! -z "$3" ]; then
-    mkdir -p "$TEMPDIR_NEW"/var/mobile/Library/pkgmirror
-    rsync -a "$TEMPDIR_NEW"/ "$TEMPDIR_NEW"/var/mobile/Library/pkgmirror/ --exclude /var/mobile/Library/pkgmirror
-    mv "$TEMPDIR_NEW"/var/mobile/Library/pkgmirror/DEBIAN "$TEMPDIR_NEW"/var/mobile/Library/pkgmirror/DEBIAN.$DEB_PACKAGE
+    mkdir -p "$TEMPDIR_OLD"/pkgmirror
+    cp -a "$TEMPDIR_NEW"/. "$TEMPDIR_OLD"/pkgmirror/
+    mv "$TEMPDIR_OLD"/pkgmirror/DEBIAN "$TEMPDIR_OLD"/pkgmirror/DEBIAN.$DEB_PACKAGE
+    mkdir -p "$TEMPDIR_NEW"/var/mobile/Library
+    mv "$TEMPDIR_OLD"/pkgmirror "$TEMPDIR_NEW"/var/mobile/Library/
 # append after "Package" : "Status: install ok installed" > "$TEMPDIR_NEW"/var/mobile/Library/pkgmirror/DEBIAN.$DEB_PACKAGE/control
 fi
 
@@ -209,7 +234,12 @@ lsrpath() {
     ' | sort | uniq
 }
 
-find "$TEMPDIR_NEW" -type f -size +0c \! -path "*/var/mobile/Library/pkgmirror/*" \! -path "*.lproj/*" \! -path "*.png" \! -path "*.svg" \! -path "*.strings" \! -path "*.lua" | while read -r file; do
+findcmd=(find "$TEMPDIR_NEW" -type f -size +0c \! -path "*/var/mobile/Library/pkgmirror/*")
+for item in "${exclude_files[@]}"; do
+    findcmd+=( \! -path "$item" )
+done
+
+"${findcmd[@]}" | while read -r file; do
   LOG "$file"
   fixedpaths=""
   fname=$(basename "$file")
@@ -222,14 +252,14 @@ find "$TEMPDIR_NEW" -type f -size +0c \! -path "*/var/mobile/Library/pkgmirror/*
         if [[ $line == /var/jb/* ]]; then
             newpath=${line/\/var\/jb\//@loader_path\/.jbroot\/}
             LOG "change rpath" "$line" "$newpath"
-            install_name_tool -rpath "$line" "$newpath" "$file"
+            I_N_T -rpath "$line" "$newpath" "$file"
         fi
     done
     otool -L "$file" | tail -n +2 | cut -d' ' -f1 | tr -d "[:blank:]" | while read line; do
         if [[ $line == /var/jb/* ]]; then
             newlib=${line/\/var\/jb\//@loader_path\/.jbroot\/}
             LOG "change library" "$line" "$newlib"
-            install_name_tool -change "$line" "$newlib" "$file"
+            I_N_T -change "$line" "$newlib" "$file"
         fi
     done
     $ECHO -n "resign..."

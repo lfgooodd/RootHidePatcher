@@ -8,10 +8,10 @@
 //import AuxiliaryExecute
 import UIKit
 
-func repackDeb(scriptPath: String, debURL: URL, outputURL: URL, patch: String) -> (Bool,String) {
+func repackDeb(scriptPath: String, debURL: URL, outputURL: URL, patch: String) -> (Int,String) {
     var output = ""
     let command = jbroot("/usr/bin/bash")
-    let env = ["PATH": "/usr/bin:$PATH:\(Bundle.main.bundlePath)/cctools"]
+    let env = ["PATH": "/usr/bin:$PATH:\(rootfs(Bundle.main.bundlePath))/cctools"]
     let args = ["-p", rootfs(scriptPath), debURL.path, outputURL.path, patch]
 
 //    assert(setuid(0) == 0)
@@ -19,7 +19,7 @@ func repackDeb(scriptPath: String, debURL: URL, outputURL: URL, patch: String) -
     NSLog("RootHidePatcher: uid=\(getuid()) euid=\(geteuid()) gid=\(getgid())")
     let receipt = AuxiliaryExecute.spawn(command: command, args: args, environment: env, output: { output += $0 })
 
-    return (receipt.exitCode==0, output)
+    return (receipt.exitCode, output)
 }
 
 func folderCheck() {
